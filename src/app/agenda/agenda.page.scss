@@ -1,0 +1,413 @@
+.agenda-content {
+  --background: #e9fcf6; /* Fondo turquesa claro de SERENA */
+}
+
+/* --- Encabezado --- */
+.header-section {
+  padding: 30px 20px 15px 20px;
+  h1 {
+    margin: 0;
+    color: #333333;
+    font-size: 2.2rem;
+    font-weight: 800;
+  }
+  p {
+    margin: 5px 0 0 0;
+    color: #66aa9f;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+.seccion-bloque {
+  padding: 15px 0;
+  margin-bottom: 5px;
+}
+.last-bloque {
+  padding-bottom: 100px; /* Espacio para el botón flotante */
+}
+
+.titulo-seccion {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 15px;
+  
+  ion-icon {
+    font-size: 1.3rem;
+    color: #66aa9f; /* Turquesa apagado */
+    margin-right: 8px;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+  }
+}
+
+/* --- Scroll Fechas --- */
+.scroll-horizontal-fechas {
+  display: flex;
+  overflow-x: auto;
+  padding: 5px 20px;
+  gap: 12px;
+  /* Ocultar barra de scroll nativa */
+  &::-webkit-scrollbar { display: none; }
+}
+
+.date-pill {
+  min-width: 65px;
+  height: 85px;
+  background: #b8eddc; /* Turquesa claro intermedio (inactivo) */
+  border-radius: 40px; /* Forma de píldora vertical */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  .dia-semana {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5a968c;
+    margin-bottom: 5px;
+  }
+  .dia-mes {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #333;
+  }
+
+  &.active {
+    background: #88d6bf; /* Turquesa vibrante (activo) */
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(136, 214, 191, 0.4);
+    
+    .dia-semana, .dia-mes {
+      color: #ffffff;
+    }
+  }
+}
+
+/* --- Grid Horarios --- */
+.grid-horarios {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.time-pill {
+  background: #b8eddc;
+  color: #5a968c;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 0;
+  text-align: center;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: #88d6bf;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(136, 214, 191, 0.4);
+  }
+}
+
+/* --- Lista Psicólogos --- */
+.lista-psicologos {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.psico-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff; /* Las tarjetas siempre blancas para contraste */
+  padding: 15px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  box-shadow: 0 5px 15px rgba(102, 170, 159, 0.08);
+  transition: all 0.3s ease;
+
+  .avatar-iniciales {
+    width: 50px;
+    height: 50px;
+    background: #e9fcf6;
+    color: #66aa9f;
+    font-weight: 800;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    margin-right: 15px;
+  }
+
+  .info-psico {
+    h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #333;
+    }
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #777;
+    }
+  }
+
+  &.active {
+    border-color: #88d6bf; /* Borde turquesa al seleccionar */
+    background: #f4fbf9;
+    
+    .avatar-iniciales {
+      background: #88d6bf;
+      color: #ffffff;
+    }
+  }
+}
+
+/* --- Botón Inferior --- */
+/* --- CORRECCIÓN DEL BOTÓN CONFIRMAR --- */
+.footer-btn {
+  position: relative !important; /* Forza a que respete el flujo del contenido */
+  display: block;
+  margin-top: 40px; /* Le da espacio de respiración desde el grid de horas */
+  padding: 0 20px 30px 20px;
+  width: 100%;
+  clear: both;
+}
+
+.btn-confirmar {
+  position: relative !important; /* Elimina cualquier posición flotante heredada */
+  --background: #66aa9f;
+  font-weight: 700;
+  height: 50px;
+  margin: 0;
+}
+
+/* (Conserva todo el CSS que pegaste en el paso anterior y añade esto al final) */
+
+/* Animación de transición entre pasos */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Efecto al tocar tarjeta de psicólogo en el paso 1 */
+.hover-efecto:active {
+  transform: scale(0.97);
+  background: #e9fcf6;
+}
+
+/* Botón de volver en el Paso 2 */
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  color: #66aa9f;
+  font-weight: 700;
+  margin-bottom: 15px;
+  cursor: pointer;
+  
+  ion-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
+  }
+}
+
+.psico-resaltado {
+  color: #5a968c;
+  font-weight: 800;
+}
+
+.agenda-content {
+  --background: #effff9;
+  padding: 20px;
+}
+
+.header-section {
+  padding: 20px;
+  h1 { font-weight: 800; font-size: 1.8rem; margin: 0 0 5px 0; color: #333; }
+  .subtitulo { color: #66aa9f; margin: 0; font-size: 0.95rem; }
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  color: #66aa9f;
+  font-weight: 600;
+  margin-bottom: 15px;
+  cursor: pointer;
+  ion-icon { margin-right: 5px; }
+}
+
+/* --- VISTA LISTA --- */
+.lista-especialistas {
+  padding: 0 20px;
+}
+
+.especialista-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(102, 170, 159, 0.08);
+
+  .avatar-iniciales {
+    background: #e6fcf5;
+    color: #5a968c;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-right: 15px;
+  }
+
+  h3 { margin: 0 0 3px 0; font-size: 1.1rem; font-weight: 700; color: #333; }
+  p { margin: 0; font-size: 0.85rem; color: #777; }
+}
+
+/* --- VISTA CALENDARIO --- */
+.titulo-seccion {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #333;
+  margin: 20px 20px 15px 20px;
+  ion-icon { margin-right: 8px; color: #66aa9f; }
+}
+
+/* Scroll horizontal de fechas */
+.scroll-fechas {
+  display: flex;
+  overflow-x: auto;
+  padding: 0 20px 10px 20px;
+  gap: 15px;
+  &::-webkit-scrollbar { display: none; } /* Oculta la barra de scroll */
+}
+
+.fecha-bubble {
+  min-width: 65px;
+  height: 80px;
+  background: #bceadd;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  transition: all 0.2s ease;
+
+  .dia-texto { font-size: 0.85rem; font-weight: 600; }
+  .dia-numero { font-size: 1.3rem; font-weight: 800; }
+
+  /* Estado Seleccionado */
+  &.selected {
+    background: #66aa9f;
+    color: #ffffff;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(102, 170, 159, 0.4);
+  }
+}
+
+/* Grid de Horas */
+.seccion-horas { padding: 0 20px; }
+.grid-horas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.hora-btn {
+  background: #bceadd;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  /* Estado Seleccionado */
+  &.selected {
+    background: #66aa9f;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(102, 170, 159, 0.3);
+  }
+}
+
+
+
+.clickable { cursor: pointer; }
+.clickable:active { opacity: 0.7; }
+
+
+
+
+/* --- MIS CITAS SECTION --- */
+.mis-citas-section {
+  padding: 10px 20px 30px 20px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.cita-card {
+  background: #ffffff;
+  border-left: 5px solid #66aa9f;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(102, 170, 159, 0.1);
+
+  .cita-info {
+    h4 { margin: 0 0 5px 0; font-size: 1.05rem; font-weight: 700; color: #333; }
+    p { margin: 0; font-size: 0.8rem; color: #777; }
+  }
+
+  .cita-fecha {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+
+    .fecha-badge {
+      background: #e6fcf5;
+      color: #5a968c;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .hora-badge {
+      background: #333;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

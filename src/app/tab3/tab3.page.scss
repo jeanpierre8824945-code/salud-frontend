@@ -1,0 +1,244 @@
+.perfil-content {
+  --background: #e9fcf6; /* Turquesa muy claro */
+}
+
+/* --- Encabezado --- */
+.perfil-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 20px 20px;
+
+  .avatar-circulo {
+    width: 80px;
+    height: 80px;
+    background: #88d6bf; /* Turquesa vibrante */
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(136, 214, 191, 0.4);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #333333;
+  }
+
+  .correo {
+    margin: 5px 0;
+    color: #5a968c;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .student-id {
+    margin: 0;
+    color: #777;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* --- Estadísticas --- */
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 25px;
+  gap: 10px;
+
+  .stat-box {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 15px 5px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(102, 170, 159, 0.08);
+
+    h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #66aa9f;
+    }
+    p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #777;
+      font-weight: 500;
+    }
+    .stat-icon {
+      font-size: 1.4rem;
+      color: #66aa9f;
+      margin-bottom: 5px;
+    }
+    .stat-date {
+      font-size: 0.85rem;
+      color: #333;
+      font-weight: 700;
+    }
+  }
+}
+
+/* --- Secciones Generales --- */
+.seccion-bloque {
+  padding: 0 20px;
+  margin-bottom: 25px;
+
+  .titulo-seccion {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #333333;
+    margin-bottom: 10px;
+    padding-left: 5px;
+  }
+}
+
+/* --- Tarjetas Separadas (Ignora el modo oscuro) --- */
+.item-separado {
+  display: flex;
+  align-items: center;
+  background: #ffffff !important; /* Forzamos el fondo blanco */
+  border-radius: 20px;
+  padding: 15px 20px;
+  margin-bottom: 12px; /* Esta es la separación entre cada botón */
+  box-shadow: 0 5px 15px rgba(102, 170, 159, 0.08);
+
+  .icon-bg {
+    width: 45px;
+    height: 45px;
+    background: #e9fcf6 !important; /* Turquesa muy claro */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+
+    ion-icon {
+      color: #66aa9f !important; /* Turquesa apagado */
+      font-size: 1.4rem;
+    }
+  }
+
+  .text-content {
+    flex: 1;
+    
+    h2 {
+      margin: 0 0 3px 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #333333 !important; /* Texto principal oscuro */
+    }
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #777777 !important; /* Subtítulo gris */
+    }
+  }
+
+  .flecha {
+    color: #a3d6ca !important;
+    font-size: 1.4rem;
+  }
+}
+
+/* Efecto al tocar los botones de configuración */
+.clickable:active {
+  transform: scale(0.97);
+  background: #f4fbf9 !important;
+}
+
+/* --- Footer --- */
+.footer-seccion {
+  padding: 0 20px 40px 20px;
+
+  .btn-logout {
+    --border-color: #ff6b6b;
+    --color: #ff6b6b;
+    --border-radius: 15px;
+    --border-width: 2px;
+    height: 50px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .disclaimer {
+    display: flex;
+    align-items: flex-start;
+    background: #b8eddc; /* Fondo un poco más oscuro para resaltar */
+    padding: 15px;
+    border-radius: 15px;
+
+    ion-icon {
+      color: #5a968c;
+      font-size: 1.5rem;
+      margin-right: 10px;
+      margin-top: 2px;
+    }
+    p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #5a968c;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+  }
+}
+
+/* Animación de entrada */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.timeline-container {
+  border-left: 2px solid #66aa9f;
+  margin-left: 15px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.timeline-item {
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.timeline-dot {
+  width: 12px; height: 12px;
+  background: #66aa9f;
+  border-radius: 50%;
+  position: absolute;
+  left: -27px; top: 5px;
+  border: 2px solid #fff;
+}
+
+.timeline-content {
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+
+
+.config-group {
+  .radio-item {
+    --background: #ffffff;
+    --padding-start: 15px;
+    --border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(102, 170, 159, 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+}

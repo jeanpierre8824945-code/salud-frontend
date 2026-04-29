@@ -1,0 +1,57 @@
+<ion-content class="login-content">
+  <div class="contenedor-principal">
+    
+    <!-- CONTENEDOR DEL LOGO -->
+    <div class="logo-header animate-fade-in">
+      <img src="assets/icon/logocompleto.png" alt="SERENA Logo">
+      <h1 class="brand-name">SERENA</h1>
+      <p class="brand-slogan">Universidad de Cundinamarca</p>
+    </div>
+
+<div class="form-container">
+
+      <div *ngIf="isLogin" class="form-box animate-fade-in">
+        <h2>Iniciar Sesión</h2>
+        
+        <ion-item class="custom-input" lines="none">
+          <ion-input [(ngModel)]="correoLogin" label="Correo Institucional" labelPlacement="floating" type="email" placeholder="usuario@ucundinamarca.edu.co"></ion-input>
+        </ion-item>
+        
+        <ion-item class="custom-input" lines="none">
+          <ion-input [(ngModel)]="passwordLogin" label="Contraseña" labelPlacement="floating" type="password" placeholder="***" (keyup.enter)="ingresar()"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" shape="round" class="main-btn" (click)="ingresar()">Entrar</ion-button>
+
+        <p class="switch-text">
+          ¿Aún no tienes una cuenta? <br>
+          <span (click)="toggleView()">Regístrate aquí</span>
+        </p>
+      </div>
+
+      <div *ngIf="!isLogin" class="form-box animate-fade-in">
+        <h2>Crear Cuenta</h2>
+        
+        <ion-item class="custom-input" lines="none">
+          <ion-input [(ngModel)]="nombreReg" label="Nombre Completo" labelPlacement="floating" type="text" placeholder="Ej. Jean Pierre"></ion-input>
+        </ion-item>
+
+        <ion-item class="custom-input" lines="none">
+          <ion-input [(ngModel)]="correoReg" label="Correo Institucional" labelPlacement="floating" type="email" placeholder="usuario@ucundinamarca.edu.co"></ion-input>
+        </ion-item>
+        
+        <ion-item class="custom-input" lines="none">
+          <ion-input [(ngModel)]="passwordReg" label="Contraseña" labelPlacement="floating" type="password" placeholder="Crea tu contraseña" (keyup.enter)="registrar()"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" shape="round" class="main-btn" (click)="registrar()">Registrarme</ion-button>
+
+        <p class="switch-text">
+          ¿Ya tienes cuenta? <br>
+          <span (click)="toggleView()">Inicia sesión aquí</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

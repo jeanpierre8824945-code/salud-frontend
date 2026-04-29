@@ -1,0 +1,88 @@
+<ion-content class="agenda-content">
+
+  <!-- VISTA 1: LISTA DE ESPECIALISTAS -->
+  <div *ngIf="vistaActual === 'lista'" class="animate-fade-in vista-lista">
+    <div class="header-section">
+      <h1>Agendar Sesión</h1>
+      <p class="subtitulo">Primero, elige con quién deseas hablar</p>
+    </div>
+
+    <div class="lista-especialistas">
+      <div *ngFor="let esp of especialistas" class="especialista-card clickable" (click)="seleccionarEspecialista(esp)">
+        <div class="avatar-iniciales">{{ esp.iniciales }}</div>
+        <div class="info-especialista">
+          <h3>{{ esp.nombre }}</h3>
+          <p>{{ esp.especialidad }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- MIS CITAS AGENDADAS -->
+    <div class="mis-citas-section" *ngIf="misCitas.length > 0">
+      <div class="titulo-seccion">
+        <ion-icon name="calendar-outline"></ion-icon> Mis Próximas Sesiones
+      </div>
+      
+      <div class="cita-card" *ngFor="let cita of misCitas">
+        <div class="cita-info">
+          <h4>{{ cita.nombre_doctor }}</h4>
+          <p>{{ cita.especialidad }}</p>
+        </div>
+        <div class="cita-fecha">
+          <div class="fecha-badge">{{ cita.fecha }}</div>
+          <div class="hora-badge">{{ cita.hora }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 2: SELECCIÓN DE FECHA Y HORA -->
+  <div *ngIf="vistaActual === 'calendario'" class="animate-fade-in vista-calendario">
+    <div class="header-section">
+      <div class="btn-volver" (click)="volverALista()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <span>Cambiar especialista</span>
+      </div>
+      <h1>Fecha y Hora</h1>
+      <p class="subtitulo">Disponibilidad de: <strong>{{ especialistaSeleccionado?.nombre }}</strong></p>
+    </div>
+
+    <!-- Fechas -->
+    <div class="seccion-fechas">
+      <div class="titulo-seccion">
+        <ion-icon name="calendar-outline"></ion-icon> Selecciona una fecha
+      </div>
+      <div class="scroll-fechas">
+        <div *ngFor="let fecha of fechas" 
+             class="fecha-bubble clickable" 
+             [ngClass]="{'selected': fechaSeleccionada === fecha}"
+             (click)="seleccionarFecha(fecha)">
+          <span class="dia-texto">{{ fecha.diaTexto }}</span>
+          <span class="dia-numero">{{ fecha.diaNumero }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horas -->
+    <div class="seccion-horas">
+      <div class="titulo-seccion">
+        <ion-icon name="time-outline"></ion-icon> Horarios disponibles
+      </div>
+      <div class="grid-horas">
+        <button *ngFor="let hora of horariosDisponibles" 
+                class="hora-btn clickable"
+                [ngClass]="{'selected': horaSeleccionada === hora}"
+                (click)="seleccionarHora(hora)">
+          {{ hora }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Botón Confirmar -->
+    <div class="footer-btn">
+      <ion-button expand="block" shape="round" class="btn-confirmar" (click)="confirmarCita()">
+        CONFIRMAR CITA
+      </ion-button>
+    </div>
+  </div>
+
+</ion-content>

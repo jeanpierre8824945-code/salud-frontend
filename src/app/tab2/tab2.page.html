@@ -1,0 +1,153 @@
+<ion-content class="dashboard-content">
+
+
+  
+  <!-- ESTADO 1: DASHBOARD PRINCIPAL -->
+  <!-- Agregamos !mostrarRecursos a la condición -->
+  <div *ngIf="!mostrarTests && !testActivo && !resultadoFinal && !mostrarRecursos" class="animate-fade-in">
+      <div class="header-section">
+  <!-- NUEVO CONTENEDOR PARA ALINEAR LOGO Y TEXTO -->
+  <div class="header-content-wrapper">
+    
+    <!-- TU LOGO AQUÍ -->
+    <img src="assets/icon/logocompleto.png" class="mini-logo-dashboard" alt="SERENA">
+
+    <!-- EL TEXTO QUE YA TENÍAS -->
+    <div class="text-welcome-container">
+      <p class="bienvenida">Bienvenido de nuevo,</p>
+      <h1>{{ usuario.nombre }}</h1>
+      <p class="pregunta">¿Cómo te sientes hoy?</p>
+    </div>
+    
+  </div>
+</div>
+
+    <div class="metricas-grid">
+      <div class="metrica-card"><ion-icon name="medkit-outline"></ion-icon><h2>{{ usuario.sesiones }}</h2><p>Sesiones</p></div>
+      <div class="metrica-card"><ion-icon name="pulse-outline"></ion-icon><h2>{{ usuario.diasActivos }}</h2><p>Días activos</p></div>
+      <div class="metrica-card"><ion-icon name="heart-outline"></ion-icon><h2>{{ usuario.bienestar }}</h2><p>Bienestar</p></div>
+    </div>
+
+    <div class="acciones-container">
+      <div class="accion-card clickable" (click)="irAChat()">
+        <div class="icon-box"><ion-icon name="chatbubble-ellipses-outline"></ion-icon></div>
+        <div class="text-box"><h3>Detección Proactiva</h3><p>Comenzar diálogo con tu guía de IA</p><span class="nota-ia">Tu IA está diseñada para identificar problemas tempranamente.</span></div>
+      </div>
+      <div class="accion-card clickable" (click)="irAAgenda()">
+        <div class="icon-box"><ion-icon name="calendar-outline"></ion-icon></div>
+        <div class="text-box"><h3>Ver Calendario</h3><p>Agenda tu próxima sesión</p></div>
+      </div>
+      
+      <div class="accion-card clickable" (click)="abrirRecursos()">
+        <div class="icon-box"><ion-icon name="library-outline"></ion-icon></div>
+        <div class="text-box">
+          <h3>Recursos para ti</h3>
+          <p>Videos, libros y tips de apoyo</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="flecha-derecha"></ion-icon>
+      </div>
+      
+      <div class="accion-card clickable" (click)="abrirMenuTests()">
+        <div class="icon-box"><ion-icon name="document-text-outline"></ion-icon></div>
+        <div class="text-box"><h3>Autoevaluación</h3><p>Realiza tests de ansiedad, estrés y más</p></div>
+        <ion-icon name="chevron-forward-outline" class="flecha-derecha"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESTADO 5: VISTA DE BIBLIOTECA DE RECURSOS (NUEVA PANTALLA) -->
+  <div *ngIf="mostrarRecursos" class="animate-fade-in tests-view">
+    <div class="header-section">
+      <div class="btn-volver" (click)="volverAInicioDesdeRecursos()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <span>Volver al inicio</span>
+      </div>
+      <h1>Biblioteca de Apoyo</h1>
+      <p class="pregunta">Contenido seleccionado para tu bienestar</p>
+    </div>
+
+    <!-- Filtros por tipo integrados en la pantalla -->
+    <div style="padding: 0 20px 15px 20px;">
+      <ion-segment [(ngModel)]="categoriaActual" (ionChange)="filtrarCategoria(categoriaActual)" mode="md" class="segment-recursos">
+        <ion-segment-button value="todos"><ion-label>Todos</ion-label></ion-segment-button>
+        <ion-segment-button value="video"><ion-icon name="videocam-outline"></ion-icon></ion-segment-button>
+        <ion-segment-button value="lectura"><ion-icon name="book-outline"></ion-icon></ion-segment-button>
+        <ion-segment-button value="tip"><ion-icon name="bulb-outline"></ion-icon></ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <div class="lista-recursos-pantalla animate-fade-in" style="padding: 0 20px 30px 20px;">
+      <!-- Mensaje si no hay recursos -->
+      <div *ngIf="recursosFiltrados.length === 0" style="text-align: center; margin-top: 50px;">
+        <ion-icon name="library-outline" style="font-size: 4rem; color: #ccc;"></ion-icon>
+        <h3 style="color: #888;">No hay recursos aquí todavía</h3>
+      </div>
+
+      <!-- Lista de Recursos dinámicos -->
+      <div class="recurso-card-lista" *ngFor="let r of recursosFiltrados" (click)="abrirEnlace(r.enlace)">
+        <div class="recurso-icon-bg" [ngClass]="r.categoria">
+          <ion-icon [name]="r.icono"></ion-icon>
+        </div>
+        <div class="recurso-info-texto">
+          <h3>{{ r.titulo }}</h3>
+          <p>{{ r.descripcion }}</p>
+        </div>
+        <ion-icon *ngIf="r.enlace" name="open-outline" class="icono-link"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESTADO 2: LISTA DE TESTS -->
+  <div *ngIf="mostrarTests && !testActivo && !resultadoFinal" class="animate-fade-in tests-view">
+    <div class="header-section">
+      <div class="btn-volver" (click)="volverInicio()"><ion-icon name="chevron-back-outline"></ion-icon><span>Volver al inicio</span></div>
+      <h1>Tests Integrales</h1>
+      <p class="pregunta">Conoce mejor tu estado actual</p>
+    </div>
+
+    <div class="lista-encuestas">
+      <div *ngFor="let encuesta of encuestas" class="encuesta-card clickable" (click)="iniciarTest(encuesta.id)">
+        <div class="icon-bg"><ion-icon [name]="encuesta.icono"></ion-icon></div>
+        <div class="texto-encuesta"><h3>{{ encuesta.titulo }}</h3><p>{{ encuesta.descripcion }}</p></div>
+        <ion-icon name="chevron-forward-outline" class="flecha"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESTADO 3: RESPONDIENDO EL TEST -->
+  <div *ngIf="testActivo" class="animate-fade-in test-activo-view">
+    <div class="test-header">
+      <div class="progreso-pill">Pregunta {{ preguntaActualIndex + 1 }} de {{ preguntasActivas.length }}</div>
+      <h2>{{ obtenerTituloTest() }}</h2>
+      <p>Selecciona la opción que mejor describa cómo te has sentido recientemente.</p>
+    </div>
+
+    <div class="pregunta-card">
+      <h3>{{ preguntasActivas[preguntaActualIndex] }}</h3>
+    </div>
+
+    <div class="opciones-container">
+      <button class="opcion-btn" *ngFor="let opcion of opcionesRespuesta" (click)="seleccionarRespuesta(opcion.valor)">
+        {{ opcion.texto }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ESTADO 4: RESULTADO FINAL -->
+  <div *ngIf="resultadoFinal" class="animate-fade-in resultado-view">
+    <div class="resultado-card">
+      <div class="icono-resultado" [ngClass]="resultadoFinal.color">
+        <ion-icon [name]="resultadoFinal.color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+      </div>
+      <h2>{{ resultadoFinal.diagnostico }}</h2>
+      <div class="puntaje-box">Puntuación: {{ resultadoFinal.puntaje }} / {{ resultadoFinal.maximo }}</div>
+      <p>{{ resultadoFinal.mensaje }}</p>
+    </div>
+
+    <div class="acciones-resultado">
+      <ion-button expand="block" shape="round" class="btn-primario" (click)="irAChat()">Hablar con Guía SERENA</ion-button>
+      <ion-button expand="block" fill="clear" class="btn-secundario" (click)="cerrarTest()">Volver a los tests</ion-button>
+    </div>
+  </div>
+
+</ion-content>

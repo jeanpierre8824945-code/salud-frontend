@@ -1,0 +1,269 @@
+<ion-content class="perfil-content">
+  
+  <div class="perfil-header animate-fade-in">
+    <div class="avatar-circulo">
+      {{ usuario.inicial }}
+    </div>
+    <h2>{{ usuario.nombre }}</h2>
+    <p class="correo">{{ usuario.correo }}</p>
+    <p class="student-id">ID: EST-2026-001234</p> 
+  </div>
+
+  <div class="stats-row animate-fade-in">
+    <div class="stat-box">
+      <h3>{{ usuario.sesiones }}</h3>
+      <p>Sesiones</p>
+    </div>
+    <div class="stat-box">
+      <h3>{{ usuario.dialogos }}</h3>
+      <p>Diálogos</p>
+    </div>
+    <div class="stat-box">
+      <ion-icon name="calendar-outline" class="stat-icon"></ion-icon>
+      <p class="stat-date">{{ usuario.fechaActual }}</p> 
+    </div>
+  </div>
+
+  <div class="seccion-bloque animate-fade-in">
+    <h3 class="titulo-seccion">Información Personal</h3>
+    <div class="item-separado">
+      <div class="icon-bg"><ion-icon name="person-outline"></ion-icon></div>
+      <div class="text-content">
+        <p>Nombre Completo</p>
+        <h2 style="color: #222; font-weight: 700;">{{ usuario.nombre }}</h2>
+      </div>
+    </div>
+    <div class="item-separado">
+      <div class="icon-bg"><ion-icon name="mail-outline"></ion-icon></div>
+      <div class="text-content">
+        <p>Correo Electrónico</p>
+        <h2 style="color: #222; font-weight: 700;">{{ usuario.correo }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion-bloque animate-fade-in">
+    <h3 class="titulo-seccion">Configuración</h3>
+    <div class="item-separado clickable" *ngFor="let item of configuraciones" (click)="abrirConfiguracion(item.titulo)">
+      <div class="icon-bg"><ion-icon [name]="item.icono"></ion-icon></div>
+      <div class="text-content">
+        <h2 style="color: #222; font-weight: 600;">{{ item.titulo }}</h2>
+        <p style="color: #555;">{{ item.subtitulo }}</p>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="flecha"></ion-icon>
+    </div>
+  </div>
+
+  <div class="footer-seccion animate-fade-in">
+    <ion-button expand="block" fill="outline" class="btn-logout" (click)="cerrarSesion()">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
+      Cerrar Sesión
+    </ion-button>
+    <div class="disclaimer">
+      <ion-icon name="lock-closed"></ion-icon>
+      <p>Tu privacidad es nuestra prioridad. Datos protegidos.</p>
+    </div>
+  </div>
+
+  <!-- MODAL 1: NOTIFICACIONES -->
+  <ion-modal [isOpen]="modalNotificacionesAbierto" (didDismiss)="cerrarModalNotificaciones()" initialBreakpoint="0.65" [breakpoints]="[0, 0.65]">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="dark">
+          <ion-title>Notificaciones</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalNotificaciones()">CERRAR</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" style="--background: #f4fbf9;">
+        <p style="color: #222; font-weight: 600;">Ajustes de alertas:</p>
+        <ion-list lines="none" style="background: transparent;">
+          <ion-item style="--background: #fff; border-radius: 12px; margin-bottom: 8px;">
+            <ion-label><h2 style="color: #222; font-weight: 700;">Citas</h2></ion-label>
+            <ion-toggle slot="end" color="success" [(ngModel)]="prefsNotificaciones.citas" (ionChange)="guardarNotificaciones()"></ion-toggle>
+          </ion-item>
+          <ion-item style="--background: #fff; border-radius: 12px; margin-bottom: 8px;">
+            <ion-label><h2 style="color: #222; font-weight: 700;">Mensajes IA</h2></ion-label>
+            <ion-toggle slot="end" color="success" [(ngModel)]="prefsNotificaciones.mensajesIA" (ionChange)="guardarNotificaciones()"></ion-toggle>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- MODAL 2: PRIVACIDAD -->
+  <ion-modal [isOpen]="modalPrivacidadAbierto" (didDismiss)="cerrarModalPrivacidad()" initialBreakpoint="0.5" [breakpoints]="[0, 0.5]">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="dark">
+          <ion-title>Privacidad y Datos</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalPrivacidad()">CERRAR</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" style="--background: #f4fbf9;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <ion-icon name="shield-checkmark" color="success" style="font-size: 3rem;"></ion-icon>
+          <h3 style="color: #222; font-weight: 700;">Privacidad Activa</h3>
+          <p style="color: #444;">Tus datos están protegidos legalmente.</p>
+        </div>
+        <ion-item (click)="eliminarCuenta()" lines="none" class="clickable" style="--background: #fff; border-radius: 12px; border: 1px solid #ffcdd2;">
+          <ion-label>
+            <h2 style="color: #d32f2f; font-weight: 700;">Eliminar Cuenta</h2>
+            <p style="color: #666;">Acción irreversible.</p>
+          </ion-label>
+          <ion-icon name="trash-outline" slot="end" color="danger"></ion-icon>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- MODAL 3: HISTORIAL REAL -->
+  <ion-modal [isOpen]="modalHistorialAbierto" (didDismiss)="cerrarModalHistorial()" initialBreakpoint="0.75" [breakpoints]="[0, 0.75, 1]">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="dark">
+          <ion-title>Historial Anónimo</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalHistorial()">CERRAR</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" style="--background: #f4fbf9;">
+        
+        <div *ngIf="historialReal.length === 0" style="text-align: center; margin-top: 50px;">
+          <ion-icon name="construct-outline" style="font-size: 4rem; color: #ccc;"></ion-icon>
+          <h3 style="color: #222;">Sin actividad aún</h3>
+          <p style="color: #666;">Agenda una cita para verla aquí.</p>
+        </div>
+
+        <div class="timeline-container" *ngIf="historialReal.length > 0">
+          <div class="timeline-item" *ngFor="let h of historialReal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-date" style="color: #888; font-weight: 700;">{{ h.fecha }}</span>
+              <h2 style="color: #222; font-size: 1rem; font-weight: 700; margin: 5px 0;">{{ h.tipo }}</h2>
+              <p style="color: #66aa9f; font-weight: 600; margin: 0;">{{ h.detalle }}</p>
+            </div>
+          </div>
+        </div>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+
+
+
+  <!-- ========================================== -->
+  <!-- MODAL DE PREFERENCIAS DE CHAT (Módulo 4)   -->
+  <!-- ========================================== -->
+  <ion-modal [isOpen]="modalChatAbierto" (didDismiss)="cerrarModalChat()" initialBreakpoint="0.75" [breakpoints]="[0, 0.75, 1]">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="dark">
+          <ion-title>Preferencias de Chat</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalChat()">LISTO</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" style="--background: #f4fbf9;">
+        <div style="margin-bottom: 20px;">
+          <h3 style="color: #222; font-weight: 700; margin-bottom: 5px;">Personaliza tu IA</h3>
+          <p style="color: #555; font-size: 0.9rem;">Ajusta cómo quieres que SERENA interactúe contigo.</p>
+        </div>
+
+        <!-- SECCIÓN: TONO DE LA IA -->
+        <div class="config-group">
+          <h4 style="color: #66aa9f; font-size: 0.8rem; text-transform: uppercase; font-weight: 800;">Tono de respuesta</h4>
+          <ion-radio-group [(ngModel)]="prefsChat.tono" (ionChange)="guardarPreferenciasChat()">
+            <ion-item lines="none" class="radio-item">
+              <ion-label>
+                <h2 style="color: #222; font-weight: 700;">Empático</h2>
+                <p style="color: #666;">Cálido, comprensivo y enfocado en tus emociones.</p>
+              </ion-label>
+              <ion-radio slot="start" value="empatico" color="success"></ion-radio>
+            </ion-item>
+            <ion-item lines="none" class="radio-item">
+              <ion-label>
+                <h2 style="color: #222; font-weight: 700;">Directo</h2>
+                <p style="color: #666;">Conciso, práctico y enfocado en soluciones.</p>
+              </ion-label>
+              <ion-radio slot="start" value="directo" color="success"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+
+        <!-- SECCIÓN: LONGITUD -->
+        <div class="config-group" style="margin-top: 25px;">
+          <h4 style="color: #66aa9f; font-size: 0.8rem; text-transform: uppercase; font-weight: 800;">Extensión de mensajes</h4>
+          <ion-radio-group [(ngModel)]="prefsChat.longitud" (ionChange)="guardarPreferenciasChat()">
+            <ion-item lines="none" class="radio-item">
+              <ion-label><h2 style="color: #222; font-weight: 700;">Breve</h2></ion-label>
+              <ion-radio slot="start" value="breve" color="success"></ion-radio>
+            </ion-item>
+            <ion-item lines="none" class="radio-item">
+              <ion-label><h2 style="color: #222; font-weight: 700;">Detallada</h2></ion-label>
+              <ion-radio slot="start" value="detallada" color="success"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+
+
+<!-- ========================================== -->
+  <!-- MODAL DE CONFIGURACIÓN GENERAL (Módulo 5)  -->
+  <!-- ========================================== -->
+  <ion-modal [isOpen]="modalGeneralAbierto" (didDismiss)="cerrarModalGeneral()" initialBreakpoint="0.6" [breakpoints]="[0, 0.6, 0.9]">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="dark">
+          <ion-title>Configuración General</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalGeneral()">CERRAR</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" style="--background: #f4fbf9;">
+        <ion-list lines="none" style="background: transparent;">
+          
+          <ion-item style="--background: #fff; border-radius: 12px; margin-bottom: 10px;">
+            <ion-label>
+              <h2 style="color: #222; font-weight: 700;">Versión de la App</h2>
+              <p>SERENA v1.0.4 - Build 2026</p>
+            </ion-label>
+            <ion-badge slot="end" color="success">Actualizada</ion-badge>
+          </ion-item>
+
+          <ion-item (click)="abrirSoporte()" clickable style="--background: #fff; border-radius: 12px; margin-bottom: 10px;">
+            <ion-icon name="chatbubble-ellipses-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2 style="color: #222; font-weight: 700;">Soporte Técnico</h2>
+              <p>Contactar con Bienestar UDEC</p>
+            </ion-label>
+            <ion-icon name="open-outline" slot="end" size="small"></ion-icon>
+          </ion-item>
+
+          <div style="text-align: center; margin-top: 20px;">
+            <p style="font-size: 0.8rem; color: #888;">
+              Desarrollado para el fortalecimiento de la salud mental universitaria.<br>
+              <strong>UDEC - Seccional Soacha</strong>
+            </p>
+          </div>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+</ion-content>

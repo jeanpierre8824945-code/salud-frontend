@@ -1,0 +1,137 @@
+/* Fondo principal (Turquesa claro) */
+.login-content {
+  --background: #e9fcf6; 
+}
+
+.contenedor-principal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.header-logo {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #66aa9f; /* Turquesa apagado */
+
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+  }
+  p {
+    font-size: 1.1rem;
+    color: #5a968c;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* La caja blanca del formulario */
+.form-box {
+  background: #ffffff;
+  padding: 35px 25px;
+  border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(102, 170, 159, 0.15); /* Sombra turquesa sutil */
+
+  h2 {
+    text-align: center;
+    color: #66aa9f;
+    font-weight: 700;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+  }
+}
+
+/* Estilo de los inputs */
+.custom-input {
+  --background: #f4fbf9;
+  --padding-start: 15px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  border: 1px solid #b8eddc; /* Turquesa intermedio */
+  
+  ion-input {
+    --color: #333333;
+  }
+}
+
+/* Botón principal */
+.main-btn {
+  --background: #88d6bf; /* Turquesa */
+  --background-hover: #66aa9f;
+  --color: white;
+  margin-top: 30px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  height: 55px;
+  box-shadow: 0 8px 20px rgba(136, 214, 191, 0.4);
+}
+
+.switch-text {
+  text-align: center;
+  margin-top: 30px;
+  color: #777;
+  font-size: 0.95rem;
+
+  span {
+    color: #66aa9f;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+/* Animación de transición en lugar del JS viejo */
+.animate-fade-in {
+  animation: slideUpFade 0.4s cubic-bezier(0.175, 0.885, 0.320, 1.1);
+}
+
+@keyframes slideUpFade {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+
+.logo-header {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  img {
+    width: 130px; /* Ajusta según el tamaño de tu logo */
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(102, 170, 159, 0.3));
+  }
+
+  .brand-name {
+    margin: 10px 0 0 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #333;
+    letter-spacing: 2px;
+  }
+
+  .brand-slogan {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #66aa9f;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+}
