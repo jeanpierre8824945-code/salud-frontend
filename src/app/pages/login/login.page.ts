@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http'; // <-- Importamos la herramienta para la API
+import { environment } from '../../../environments/environment';
+
+import { checkmarkCircleOutline, alertCircleOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 
 /**
  * @component LoginPage
@@ -39,6 +43,7 @@ export class LoginPage {
    */
   isLogin = true; 
 
+  // Variables del formulario
   // --- Campos del formulario de Login ---
   /** Correo electrónico ingresado en el formulario de inicio de sesión. */
   correoLogin: string = '';
@@ -54,17 +59,19 @@ export class LoginPage {
   passwordReg: string = '';
 
   /**
-   * URL base del backend FastAPI desplegado en Render.
+   * URL base del backend FastAPI obtenida desde environment.
    * Todos los endpoints de autenticación se construyen sobre esta base.
    * @private
    */
-  private apiUrl = 'https://backend-salud-t6br.onrender.com/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private router: Router,
     private toastController: ToastController,
     private http: HttpClient // <-- Inyectamos el HttpClient
-  ) {}
+  ) {
+    addIcons({ checkmarkCircleOutline, alertCircleOutline });
+  }
 
   /**
    * Alterna entre el formulario de login y el de registro.
@@ -74,6 +81,7 @@ export class LoginPage {
     this.isLogin = !this.isLogin;
   }
 
+  // --- Función para Iniciar Sesión con el Backend ---
   /**
    * Valida los campos del formulario de login y, si son correctos,
    * envía una petición POST al endpoint `/api/login` del backend.
@@ -118,6 +126,7 @@ export class LoginPage {
           localStorage.setItem('usuarioNombre', respuesta.datos_usuario.nombre);
           localStorage.setItem('usuarioCorreo', respuesta.datos_usuario.correo);
 
+          // --- NUEVAS LÍNEAS PARA EL CAMINO 1 ---
           // Métricas de bienestar usadas en Tab1 y Tab2 (camino 1 del flujo de usuario)
           localStorage.setItem('usuarioSesiones', respuesta.datos_usuario.sesiones.toString());
           localStorage.setItem('usuarioDias', respuesta.datos_usuario.dias_activos.toString());
@@ -140,6 +149,7 @@ export class LoginPage {
     });
   }
 
+  // --- Función para Registrarse en el Backend ---
   /**
    * Valida los campos del formulario de registro y, si son correctos,
    * envía una petición POST al endpoint `/api/registro` del backend.
@@ -214,8 +224,9 @@ export class LoginPage {
       message: mensaje,
       duration: 3000,
       color: color,
-      position: 'bottom',
-      cssClass: 'custom-toast'
+      position: 'top',
+      cssClass: 'toast-moderno',
+      icon: color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'
     });
     await toast.present();
   }

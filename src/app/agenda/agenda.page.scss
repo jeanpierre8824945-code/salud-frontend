@@ -374,35 +374,63 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* Evita desborde en móviles pequeños */
+  gap: 15px;
   box-shadow: 0 4px 15px rgba(102, 170, 159, 0.1);
 
   .cita-info {
+    flex: 1;
+    min-width: 120px;
     h4 { margin: 0 0 5px 0; font-size: 1.05rem; font-weight: 700; color: #333; }
-    p { margin: 0; font-size: 0.8rem; color: #777; }
+    p { 
+      margin: 0; 
+      font-size: 0.8rem; 
+      color: #777; 
+      /* Truncar si es muy largo */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
-  .cita-fecha {
+  .cita-acciones {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     .fecha-badge {
       background: #e6fcf5;
       color: #5a968c;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
       font-weight: 700;
     }
 
     .hora-badge {
       background: #333;
       color: #fff;
-      padding: 4px 8px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
       font-size: 0.85rem;
       font-weight: 800;
+    }
+
+    .btn-cancelar {
+      margin: 0;
+      width: 36px;
+      height: 36px;
+      --background: #ffebee;
+      --background-activated: #ffcdd2;
+      --background-hover: #ffcdd2;
+      --border-radius: 8px;
+      --padding-start: 0;
+      --padding-end: 0;
+      ion-icon {
+        font-size: 1.1rem;
+      }
     }
   }
 }

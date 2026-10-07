@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { addIcons } from 'ionicons';
 import { 
   personOutline, mailOutline, notificationsOutline, 
@@ -75,6 +76,7 @@ export class Tab3Page {
     { titulo: 'Configuración General', subtitulo: 'Ajustes de la aplicación', icono: 'settings-outline' }
   ];
 
+  // Modales
   // --- Flags de visibilidad de modales (uno por sección de configuración) ---
   /** `true` cuando el modal de configuración de notificaciones está abierto. */
   modalNotificacionesAbierto = false;
@@ -87,6 +89,7 @@ export class Tab3Page {
   /** `true` cuando el modal de configuración general está abierto. */
   modalGeneralAbierto = false;
 
+
   /**
    * Preferencias de comportamiento del chat con la IA.
    * - `tono`: estilo de comunicación de la IA. Opciones: `'empatico'`, `'directo'`, `'motivador'`.
@@ -94,9 +97,10 @@ export class Tab3Page {
    * Se persiste en `localStorage['prefs_chat_serena']` y es leído por `Tab1Page`.
    */
   prefsChat = {
-    tono: 'empatico',
-    longitud: 'normal'
+    tono: 'empatico', // Opciones: empatico, directo, motivador
+    longitud: 'normal' // Opciones: breve, normal, detallada
   };
+
 
   /**
    * Preferencias de notificaciones del usuario.
@@ -240,7 +244,7 @@ export class Tab3Page {
    */
   cargarHistorialDesdeServidor() {
     const correo = localStorage.getItem('usuarioCorreo');
-    const apiUrl = 'https://backend-salud-t6br.onrender.com/api';
+    const apiUrl = environment.apiUrl;
 
     if (!correo) return;
 
@@ -257,6 +261,7 @@ export class Tab3Page {
     });
   }
 
+  // Cierres de modales
   // --- Cierre de modales individuales ---
   /** Cierra el modal del historial anónimo. */
   cerrarModalHistorial() { this.modalHistorialAbierto = false; }
@@ -305,7 +310,7 @@ export class Tab3Page {
    */
   ejecutarEliminacionTotal() {
     const correo = localStorage.getItem('usuarioCorreo');
-    const apiUrl = 'https://backend-salud-t6br.onrender.com/api';
+    const apiUrl = environment.apiUrl;
 
     if (!correo) return;
 

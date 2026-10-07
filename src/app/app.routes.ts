@@ -35,6 +35,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
   },
   {
+    // Esta será nuestra ruta contenedora de pestañas
     // Ruta contenedora de pestañas; sus rutas hijas se definen en tabs/tabs.routes.ts
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.routes').then(m => m.routes)

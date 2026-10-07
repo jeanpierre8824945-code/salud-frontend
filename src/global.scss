@@ -35,3 +35,12 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+/* --- Estilos para Toasts Modernos --- */
+ion-toast.toast-moderno {
+  --border-radius: 16px;
+  --box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  --margin-top: 15px;
+  --margin-bottom: 15px;
+}

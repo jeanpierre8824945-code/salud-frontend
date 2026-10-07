@@ -23,13 +23,18 @@
       </div>
       
       <div class="cita-card" *ngFor="let cita of misCitas">
+        <!-- Lado Izquierdo -->
         <div class="cita-info">
           <h4>{{ cita.nombre_doctor }}</h4>
           <p>{{ cita.especialidad }}</p>
         </div>
-        <div class="cita-fecha">
+        <!-- Lado Derecho -->
+        <div class="cita-acciones">
           <div class="fecha-badge">{{ cita.fecha }}</div>
           <div class="hora-badge">{{ cita.hora }}</div>
+          <ion-button class="btn-cancelar" fill="clear" color="danger" (click)="confirmarCancelacion(cita)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
         </div>
       </div>
     </div>

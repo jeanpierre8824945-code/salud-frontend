@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; // <-- NUEVO: Para peticiones al backend
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { addIcons } from 'ionicons';
-import { chevronBackOutline, calendarOutline, timeOutline } from 'ionicons/icons';
+import { chevronBackOutline, calendarOutline, timeOutline, trashOutline, checkmarkCircleOutline, alertCircleOutline } from 'ionicons/icons';
 
 /**
  * @component AgendaPage
@@ -49,7 +50,7 @@ export class AgendaPage implements OnInit {
    * URL base del backend FastAPI.
    * @private
    */
-  private apiUrl = 'https://backend-salud-t6br.onrender.com/api';
+  private apiUrl = environment.apiUrl;
 
   /**
    * Catálogo de especialistas disponibles.
@@ -97,9 +98,10 @@ export class AgendaPage implements OnInit {
   constructor(
     private router: Router,
     private toastController: ToastController,
-    private http: HttpClient // <-- NUEVO: Inyectado en el constructor
+    private alertController: AlertController,
+    private http: HttpClient
   ) {
-    addIcons({ chevronBackOutline, calendarOutline, timeOutline });
+    addIcons({ chevronBackOutline, calendarOutline, timeOutline, trashOutline, checkmarkCircleOutline, alertCircleOutline });
   }
 
   /**
@@ -130,8 +132,7 @@ export class AgendaPage implements OnInit {
    * de presentación y evitar joins innecesarios en el servidor.
    */
   cargarMisCitas() {
-    const correo = localStorage.getItem('usuarioCorreo');
-    if (!correo) return;
+    const correo = localStorage.getItem('usuarioCorreo') || 'usuario@ucundinamarca.edu.co';
 
     this.http.get<any>(`${this.apiUrl}/mis-citas/${correo}`).subscribe({
       next: (respuesta) => {
@@ -139,6 +140,7 @@ export class AgendaPage implements OnInit {
         this.misCitas = respuesta.citas.map((cita: any) => {
           const doc = this.especialistas.find(e => e.id === cita.especialista_id);
           return {
+            id: cita.id,
             nombre_doctor: doc?.nombre || 'Especialista',
             especialidad: doc?.especialidad || '',
             fecha: cita.fecha,
@@ -146,7 +148,10 @@ export class AgendaPage implements OnInit {
           };
         });
       },
-      error: (error) => console.error('Error al cargar mis citas:', error)
+      error: (error) => {
+        console.error('Error al cargar mis citas:', error);
+        this.mostrarAlerta('Error de conexión al cargar datos.', 'danger');
+      }
     });
   }
 
@@ -188,9 +193,25 @@ export class AgendaPage implements OnInit {
   seleccionarFecha(fecha: any) {
     this.fechaSeleccionada = fecha;
     this.horaSeleccionada = ''; 
-    
-    // Mostramos todos los horarios temporalmente mientras carga la disponibilidad real
-    this.horariosDisponibles = [...this.horariosBase];
+
+    // Determinamos si la fecha seleccionada es hoy para filtrar horas ya pasadas
+    const hoy = new Date();
+    const fechaHoyStr = hoy.toISOString().split('T')[0];
+    const esHoy = fecha.formatoDB === fechaHoyStr;
+    const horaActual = hoy.getHours();
+
+    /**
+     * Filtra las horas que ya pasaron si la fecha seleccionada es hoy.
+     * Compara la parte numérica de cada hora (ej. '10:00' → 10) contra la hora
+     * actual del reloj del sistema. Solo se muestran horas estrictamente futuras.
+     */
+    const filtrarPasadas = (horas: string[]) => {
+      if (!esHoy) return horas;
+      return horas.filter(h => parseInt(h.split(':')[0], 10) > horaActual);
+    };
+
+    // Mostramos horarios temporalmente (ya filtrados por tiempo) mientras carga la disponibilidad real
+    this.horariosDisponibles = filtrarPasadas([...this.horariosBase]);
 
     // Consultamos al backend cuáles horas ya están reservadas para este especialista y fecha
     const url = `${this.apiUrl}/citas-ocupadas?especialista_id=${this.especialistaSeleccionado.id}&fecha=${fecha.formatoDB}`;
@@ -198,10 +219,15 @@ export class AgendaPage implements OnInit {
     this.http.get<any>(url).subscribe({
       next: (respuesta) => {
         const horasOcupadas = respuesta.horas_ocupadas;
-        // Filtramos: Dejamos solo los horarios que NO estén en la lista de ocupados
-        this.horariosDisponibles = this.horariosBase.filter(hora => !horasOcupadas.includes(hora));
+        // Filtramos ocupadas Y pasadas (si es hoy)
+        this.horariosDisponibles = filtrarPasadas(
+          this.horariosBase.filter(hora => !horasOcupadas.includes(hora))
+        );
       },
-      error: (error) => console.error('Error al obtener disponibilidad:', error)
+      error: (error) => {
+        console.error('Error al obtener disponibilidad:', error);
+        this.mostrarAlerta('Error de conexión al cargar datos.', 'danger');
+      }
     });
   }
 
@@ -237,11 +263,7 @@ export class AgendaPage implements OnInit {
       return;
     }
 
-    const correo = localStorage.getItem('usuarioCorreo');
-    if (!correo) {
-      this.mostrarAlerta('Error de sesión. Vuelve a iniciar sesión.');
-      return;
-    }
+    const correo = localStorage.getItem('usuarioCorreo') || 'usuario@ucundinamarca.edu.co';
 
     const datosCita = {
       correo_estudiante: correo,
@@ -300,7 +322,7 @@ export class AgendaPage implements OnInit {
         this.fechas.push({
           diaTexto: diasSemana[fecha.getDay()],
           diaNumero: fecha.getDate(),
-          formatoDB: formatoDB // Ej: "2026-09-08"
+          formatoDB: formatoDB
         });
       }
     }
@@ -319,8 +341,55 @@ export class AgendaPage implements OnInit {
       message: mensaje,
       duration: 3000,
       color: color,
-      position: 'bottom'
+      position: 'top',
+      cssClass: 'toast-moderno',
+      icon: color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'
     });
     await toast.present();
+  }
+
+  /**
+   * Muestra un alert para confirmar la cancelación de una cita y realiza
+   * la petición DELETE al servidor en caso afirmativo.
+   * 
+   * @param cita Objeto de la cita a cancelar, debe contener la propiedad `id`.
+   */
+  async confirmarCancelacion(cita: any) {
+    const alert = await this.alertController.create({
+      header: 'Cancelar Cita',
+      message: '¿Estás seguro de que deseas cancelar esta sesión?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel'
+        },
+        {
+          text: 'Sí',
+          handler: () => {
+            if (!cita.id) {
+              console.error('ID de la cita no definido:', cita);
+              this.mostrarAlerta('Error: identificador de la cita no encontrado.', 'danger');
+              return;
+            }
+
+            this.http.delete<any>(this.apiUrl + '/cancelar-cita/' + cita.id).subscribe({
+              next: () => {
+                this.mostrarAlerta('Cita cancelada correctamente.', 'success');
+                this.cargarMisCitas();
+                // Si estamos en la vista de calendario y viendo el mismo día, recargamos la disponibilidad
+                if (this.vistaActual === 'calendario' && this.fechaSeleccionada && this.fechaSeleccionada.formatoDB === cita.fecha) {
+                  this.seleccionarFecha(this.fechaSeleccionada);
+                }
+              },
+              error: (err) => {
+                console.error('Error al cancelar la cita:', err);
+                this.mostrarAlerta('Error al intentar cancelar la cita.', 'danger');
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

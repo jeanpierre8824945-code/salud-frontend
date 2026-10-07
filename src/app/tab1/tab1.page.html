@@ -34,7 +34,7 @@
     </div>
 
     <div *ngFor="let msg of mensajes" class="message-row" [class]="msg.emisor">
-      <div class="message-bubble">{{ msg.texto }}</div>
+      <div class="message-bubble" [innerHTML]="formatearTexto(msg.texto)"></div>
     </div>
 
     <div *ngIf="cargando" class="message-row bot">

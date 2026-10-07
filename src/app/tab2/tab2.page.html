@@ -73,6 +73,7 @@
         <ion-segment-button value="video"><ion-icon name="videocam-outline"></ion-icon></ion-segment-button>
         <ion-segment-button value="lectura"><ion-icon name="book-outline"></ion-icon></ion-segment-button>
         <ion-segment-button value="tip"><ion-icon name="bulb-outline"></ion-icon></ion-segment-button>
+        <ion-segment-button value="juego"><ion-icon name="game-controller-outline"></ion-icon></ion-segment-button>
       </ion-segment>
     </div>
 
@@ -84,7 +85,7 @@
       </div>
 
       <!-- Lista de Recursos dinámicos -->
-      <div class="recurso-card-lista" *ngFor="let r of recursosFiltrados" (click)="abrirEnlace(r.enlace)">
+      <div class="recurso-card-lista" *ngFor="let r of recursosFiltrados" (click)="abrirRecurso(r.enlace)">
         <div class="recurso-icon-bg" [ngClass]="r.categoria">
           <ion-icon [name]="r.icono"></ion-icon>
         </div>
@@ -92,7 +93,7 @@
           <h3>{{ r.titulo }}</h3>
           <p>{{ r.descripcion }}</p>
         </div>
-        <ion-icon *ngIf="r.enlace" name="open-outline" class="icono-link"></ion-icon>
+        <ion-icon name="open-outline" class="icono-link"></ion-icon>
       </div>
     </div>
   </div>

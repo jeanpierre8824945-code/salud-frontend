@@ -1,13 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { 
   IonHeader, IonToolbar, IonContent, 
-  IonFooter, IonRow, IonCol, IonInput, IonButton, IonIcon 
+  IonFooter, IonRow, IonCol, IonInput, IonButton, IonIcon,
+  ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { send, alertCircle, hardwareChipOutline, shieldCheckmarkOutline } from 'ionicons/icons'; 
+import { send, alertCircle, hardwareChipOutline, shieldCheckmarkOutline, checkmarkCircleOutline, alertCircleOutline } from 'ionicons/icons'; 
 
 /**
  * @component Tab1Page
@@ -44,7 +46,7 @@ import { send, alertCircle, hardwareChipOutline, shieldCheckmarkOutline } from '
     IonFooter, IonRow, IonCol, IonInput, IonButton, IonIcon
   ],
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
   /**
    * Referencia al contenedor scrollable del chat.
    * Se usa para invocar `scrollToBottom()` cada vez que llega un mensaje nuevo,
@@ -52,11 +54,12 @@ export class Tab1Page {
    */
   @ViewChild('chatContent', { static: false }) chatContent!: IonContent;
 
+  // <-- APUNTAMOS AL SERVIDOR LOCAL (La Burbuja)
   /**
    * URL base del backend FastAPI.
    * @private
    */
-  private apiUrl = 'https://backend-salud-t6br.onrender.com/api';
+  private apiUrl = environment.apiUrl;
   
   /** Nombre del usuario autenticado, leído de `localStorage` al entrar a la pestaña. */
   nombreUsuario: string = 'Estudiante';
@@ -92,10 +95,26 @@ export class Tab1Page {
     'Necesito hablar 🗣️'
   ];
 
-  constructor(private http: HttpClient) {
-    addIcons({ send, alertCircle, hardwareChipOutline, shieldCheckmarkOutline }); 
+  constructor(
+    private http: HttpClient,
+    private toastController: ToastController
+  ) {
+    addIcons({ send, alertCircle, hardwareChipOutline, shieldCheckmarkOutline, checkmarkCircleOutline, alertCircleOutline }); 
   }
 
+  ngOnInit() {
+    const historialGuardado = localStorage.getItem('historial_chat');
+    if (historialGuardado) {
+      try {
+        this.mensajes = JSON.parse(historialGuardado);
+      } catch (e) {
+        console.error('Error parseando el historial del chat', e);
+        // Si hay error en el parseo, mantenemos el mensaje por defecto
+      }
+    }
+  }
+
+  // <-- LEEMOS TU NOMBRE REAL AL ENTRAR A LA PESTAÑA
   /**
    * Hook de ciclo de vida de Ionic. Se ejecuta cada vez que el usuario
    * navega hacia esta pestaña (incluso si ya estaba creada).
@@ -136,6 +155,7 @@ export class Tab1Page {
 
     const textoUsuario = this.nuevoMensaje;
     this.mensajes.push({ emisor: 'user', texto: textoUsuario });
+    this.guardarHistorial();
     
     // Leemos las preferencias guardadas; si no existen, usamos valores por defecto
     const prefsRaw = localStorage.getItem('prefs_chat_serena');
@@ -148,7 +168,7 @@ export class Tab1Page {
 
     const datosParaEnviar = {
       mensaje: textoUsuario,
-      correo: localStorage.getItem('usuarioCorreo'),
+      correo: localStorage.getItem('usuarioCorreo') || 'usuario@ucundinamarca.edu.co',
       nombre: this.nombreUsuario,
       tono: prefs.tono,
       longitud: prefs.longitud,
@@ -159,15 +179,50 @@ export class Tab1Page {
 
     this.http.post<any>(`${this.apiUrl}/chat`, datosParaEnviar).subscribe({
       next: (respuesta) => {
-        this.mensajes.push({ emisor: 'bot', texto: respuesta.respuesta_ia });
+        let textoIA: string = respuesta.respuesta_ia;
+
+        // --- Interceptar comando de agendamiento automático ---
+        const regexAgendar = /\[AGENDAR:([a-zA-Z0-9_-]+):(\d{4}-\d{2}-\d{2}):(\d{2}:\d{2})\]/i;
+        const match = textoIA.match(regexAgendar);
+
+        if (match) {
+          const especialistaId = match[1]; // ej. 'esp1'
+          const fechaExtraida  = match[2]; // ej. '2026-10-01'
+          const horaExtraida   = match[3]; // ej. '14:00'
+
+          // Limpiamos la etiqueta del texto visible para el usuario
+          textoIA = textoIA.replace(regexAgendar, '').trim();
+
+          // POST silencioso para agendar la cita automáticamente
+          const payloadCita = {
+            correo_estudiante: localStorage.getItem('usuarioCorreo') || 'usuario@ucundinamarca.edu.co',
+            especialista_id: especialistaId,
+            fecha: fechaExtraida,
+            hora: horaExtraida
+          };
+
+          this.http.post<any>(`${this.apiUrl}/agendar-cita`, payloadCita).subscribe({
+            next: () => this.mostrarToast('¡Cita agendada automáticamente por SERENA!', 'success'),
+            error: (err) => {
+              console.error('Error al agendar cita automática:', err);
+              this.mostrarToast('No se pudo agendar la cita automática.', 'danger');
+            }
+          });
+        }
+
+        this.mensajes.push({ emisor: 'bot', texto: textoIA });
+        this.guardarHistorial();
         // Si el backend detecta señales de crisis, mostramos el panel SOS de emergencias
         if (respuesta.alerta_crisis) this.mostrarSOS = true;
         this.cargando = false;
         this.hacerScroll();
       },
-      error: (error) => {
+      error: (err) => {
+        console.error('Error en la petición /api/chat:', err);
         this.cargando = false;
-        this.mensajes.push({ emisor: 'bot', texto: 'Perdí la señal, Jean.' });
+        this.mensajes.push({ emisor: 'bot', texto: 'Hubo un error de conexión. Por favor, intenta de nuevo.' });
+        this.guardarHistorial();
+        this.hacerScroll();
       }
     });
   }
@@ -195,5 +250,52 @@ export class Tab1Page {
         this.chatContent.scrollToBottom(300);
       }
     }, 100);
+  }
+
+  /**
+   * Muestra una notificación toast en la parte inferior de la pantalla.
+   *
+   * @param {string} mensaje - Texto a mostrar.
+   * @param {string} [color='success'] - Color semántico del toast.
+   */
+  async mostrarToast(mensaje: string, color: string = 'success') {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 3000,
+      color: color,
+      position: 'top',
+      cssClass: 'toast-moderno',
+      icon: color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'
+    });
+    await toast.present();
+  }
+
+  /**
+   * Guarda el arreglo de mensajes actual en el localStorage.
+   */
+  guardarHistorial() {
+    localStorage.setItem('historial_chat', JSON.stringify(this.mensajes));
+  }
+
+  /**
+   * Parsea Markdown básico a HTML para renderizar correctamente los mensajes.
+   *
+   * @param {string} texto - Texto plano con formato Markdown.
+   * @returns {string} Texto con etiquetas HTML (`<strong>`, `<em>`, `<br>`).
+   */
+  formatearTexto(texto: string): string {
+    if (!texto) return '';
+    let html = texto;
+    
+    // **negrita**
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // *cursiva*
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Saltos de línea a <br>
+    html = html.replace(/\n/g, '<br>');
+    
+    return html;
   }
 }

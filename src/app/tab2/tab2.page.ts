@@ -4,13 +4,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { addIcons } from 'ionicons';
 import { 
   pulseOutline, heartOutline, medkitOutline, 
   chatbubbleEllipsesOutline, calendarOutline, bookOutline, 
   documentTextOutline, chevronBackOutline, chevronForwardOutline,
   checkmarkCircleOutline, alertCircleOutline, libraryOutline,
-  videocamOutline, bulbOutline, openOutline
+  videocamOutline, bulbOutline, openOutline, gameControllerOutline
 } from 'ionicons/icons';
 
 /**
@@ -46,9 +47,11 @@ import {
 })
 export class Tab2Page {
   
+  // Datos de usuario
   /** Datos del usuario activo, cargados desde `localStorage` en `ionViewWillEnter`. */
   usuario = { nombre: '...', sesiones: 0, diasActivos: 0, bienestar: '0%' };
 
+  // Control de Tests
   // --- Estado de la UI para el módulo de Tests ---
   /** Controla si se muestra el menú de selección de tests. */
   mostrarTests: boolean = false;
@@ -69,6 +72,7 @@ export class Tab2Page {
   /** Acumulador de puntaje durante la ejecución del test. */
   puntajeTotal: number = 0;
 
+  // --- NUEVAS VARIABLES PARA RECURSOS ---
   // --- Estado de la UI para el módulo de Recursos ---
   /** Controla si el modal de recursos está abierto (uso legacy, ver `mostrarRecursos`). */
   modalRecursosAbierto: boolean = false;
@@ -85,8 +89,9 @@ export class Tab2Page {
    * URL base del backend FastAPI.
    * @private
    */
-  private apiUrl = 'https://backend-salud-t6br.onrender.com/api';
+  private apiUrl = environment.apiUrl;
 
+  // Configuración de Tests
   /**
    * Metadatos de los tests disponibles para mostrar en el menú de selección.
    * El `id` es la clave que enlaza con los arrays de preguntas correspondientes.
@@ -120,7 +125,8 @@ export class Tab2Page {
       pulseOutline, heartOutline, medkitOutline, chatbubbleEllipsesOutline, 
       calendarOutline, bookOutline, documentTextOutline, chevronBackOutline, 
       chevronForwardOutline, checkmarkCircleOutline, alertCircleOutline,
-      libraryOutline, videocamOutline, bulbOutline, openOutline 
+      libraryOutline, videocamOutline, bulbOutline, openOutline,
+      gameControllerOutline
     });
   }
 
@@ -145,12 +151,14 @@ export class Tab2Page {
     this.usuario.bienestar = localStorage.getItem('usuarioBienestar') || '100%';
   }
 
+  // Navegación
   // --- Navegación hacia otras pestañas ---
   /** Navega programáticamente a la pestaña de Chat (Tab1). */
   irAChat() { this.router.navigate(['/tabs/chat']); }
   /** Navega programáticamente a la página de Agenda de citas. */
   irAAgenda() { this.router.navigate(['/tabs/agenda']); }
   
+  // --- LÓGICA DE RECURSOS ---
   // --- Módulo de Recursos ---
 
   /**
@@ -172,16 +180,84 @@ export class Tab2Page {
   }
 
   /**
-   * Solicita la lista de recursos al endpoint GET `/api/recursos` y
-   * aplica el filtro inicial `'todos'` para mostrar todos los elementos.
+   * Biblioteca local de recursos curados para estudiantes universitarios.
+   * Cubre las 4 categorías del filtro: juego, video, lectura, tip.
+   * Se fusiona con los datos del servidor en `cargarRecursosDesdeServidor()`,
+   * garantizando contenido siempre visible aunque el backend no responda.
+   */
+  public recursosLocales: any[] = [
+    // --- Juegos e interactivos ---
+    { id: 101, titulo: 'Respiración Visual Interactiva', descripcion: 'Sincroniza tu respiración para calmar la ansiedad.', categoria: 'juego', enlace: 'https://xhalr.com/', icono: 'game-controller-outline' },
+    { id: 102, titulo: 'Arte Relajante Zen', descripcion: 'Dibuja patrones de luz para despejar tu mente.', categoria: 'juego', enlace: 'http://weavesilk.com/', icono: 'game-controller-outline' },
+    { id: 103, titulo: 'A Soft Murmur (Sonidos)', descripcion: 'Mezclador interactivo de lluvia, viento y olas para concentrarte.', categoria: 'juego', enlace: 'https://asoftmurmur.com/', icono: 'game-controller-outline' },
+    { id: 109, titulo: 'Quick, Draw!', descripcion: 'Distrae tu mente 5 minutos dibujando con inteligencia artificial.', categoria: 'juego', enlace: 'https://quickdraw.withgoogle.com/', icono: 'game-controller-outline' },
+
+    // --- Videos ---
+    { id: 104, titulo: 'Yoga para relajar cuello y espalda', descripcion: 'Rutina de 10 min para liberar tensión después de estudiar.', categoria: 'video', enlace: 'https://www.youtube.com/watch?v=b1H3xO3x_Js', icono: 'videocam-outline' },
+    { id: 105, titulo: 'Radio Lofi para Estudiar', descripcion: 'Beats relajantes 24/7 para máxima concentración.', categoria: 'video', enlace: 'https://www.youtube.com/watch?v=lTRiuFIWV54', icono: 'videocam-outline' },
+
+    // --- Lecturas ---
+    { id: 106, titulo: 'Higiene del Sueño', descripcion: 'Consejos clínicos para dormir mejor en época de parciales.', categoria: 'lectura', enlace: 'https://www.mayoclinic.org/es-es/healthy-lifestyle/adult-health/in-depth/sleep/art-20048379', icono: 'book-outline' },
+    { id: 107, titulo: 'La regla de los 2 Minutos', descripcion: 'Un método rápido para vencer la procrastinación.', categoria: 'lectura', enlace: 'https://lamenteesmaravillosa.com/la-regla-de-los-dos-minutos-para-dejar-de-procrastinar/', icono: 'book-outline' },
+
+    // --- Tips y herramientas ---
+    { id: 108, titulo: 'Matriz de Eisenhower', descripcion: 'Aprende a priorizar tareas entre lo urgente y lo importante.', categoria: 'tip', enlace: 'https://todoist.com/es/productivity-methods/eisenhower-matrix', icono: 'bulb-outline' }
+  ];
+
+  /**
+   * Diccionario de curación: mapea el título exacto de un recurso a su URL correcta.
+   * Se usa en `cargarRecursosDesdeServidor()` cuando el backend devuelve un enlace vacío,
+   * garantizando que recursos conocidos siempre abran su contenido apropiado.
+   */
+  private readonly enlacesCurados: Record<string, string> = {
+    "Meditación 5 Minutos":       'https://www.youtube.com/watch?v=cZJjJEWixvE',
+    "El poder del 'Todavía'":     'https://www.ted.com/talks/carol_dweck_the_power_of_believing_that_you_can_improve?language=es',
+    "Técnica Pomodoro":           'https://pomodoro-tracker.com/?lang=es'
+  };
+
+  /**
+   * URLs genéricas de respaldo por categoría.
+   * Se usan cuando un recurso del backend no tiene enlace Y no está en `enlacesCurados`.
+   */
+  private readonly RESPALDO_POR_CATEGORIA: Record<string, string> = {
+    video:   'https://www.youtube.com/watch?v=cZJjJEWixvE',
+    lectura: 'https://www.psicologia-online.com/',
+    tip:     'https://pomodoro-tracker.com/?lang=es',
+    juego:   'https://xhalr.com/'
+  };
+
+  /**
+   * Solicita la lista de recursos al endpoint GET `/api/recursos`, aplica curación
+   * inteligente de URLs (diccionario → respaldo por categoría), la combina con los
+   * recursos de juego locales y aplica el filtro inicial `'todos'`.
    */
   cargarRecursosDesdeServidor() {
     this.http.get<any[]>(`${this.apiUrl}/recursos`).subscribe({
       next: (res) => {
-        this.listaRecursos = res;
+        const recursosSanitizados = res.map(r => {
+          // 1. Si el recurso ya trae un enlace válido, lo respetamos
+          if (r.enlace && r.enlace.trim() !== '') return r;
+
+          // 2. Si no tiene enlace, buscamos en el diccionario de curación por título exacto
+          const urlCurada = this.enlacesCurados[r.titulo as string];
+          if (urlCurada) return { ...r, enlace: urlCurada };
+
+          // 3. Último recurso: URL genérica según la categoría del recurso
+          const urlCategoria = this.RESPALDO_POR_CATEGORIA[r.categoria as string]
+            ?? 'https://www.youtube.com/watch?v=cZJjJEWixvE';
+          return { ...r, enlace: urlCategoria };
+        });
+
+        // Fusionamos: recursos del servidor primero, luego los locales curados
+        this.listaRecursos = [...recursosSanitizados, ...this.recursosLocales];
         this.filtrarCategoria('todos');
       },
-      error: (err) => console.error('Error al traer recursos:', err)
+      error: (err) => {
+        // Si falla el servidor, la biblioteca local sigue siendo funcional
+        console.error('Error al traer recursos:', err);
+        this.listaRecursos = [...this.recursosLocales];
+        this.filtrarCategoria('todos');
+      }
     });
   }
 
@@ -189,7 +265,7 @@ export class Tab2Page {
    * Filtra la lista de recursos por categoría y actualiza `recursosFiltrados`.
    * El caso especial `'todos'` muestra la lista completa sin filtrar.
    *
-   * @param {string} cat - Categoría a filtrar (ej.: `'articulo'`, `'video'`, `'todos'`).
+   * @param {string} cat - Categoría a filtrar (ej.: `'video'`, `'lectura'`, `'tip'`, `'juego'`, `'todos'`).
    */
   filtrarCategoria(cat: string) {
     this.categoriaActual = cat;
@@ -201,18 +277,35 @@ export class Tab2Page {
   }
 
   /**
-   * Abre una URL externa en el navegador del sistema.
-   * El target `'_system'` es la convención de Capacitor/Cordova para
-   * abrir URLs en el navegador nativo del dispositivo (no en el WebView).
+   * Abre una URL de recurso en el navegador externo del sistema.
+   *
+   * Lógica de sanitización:
+   * 1. Si `url` es nula o vacía → no hace nada (return temprano).
+   * 2. Si `url` no empieza con `http://` ni `https://` → prepende `https://`
+   *    para evitar que el navegador la trate como ruta relativa.
+   * 3. Abre en pestaña nueva con `'_blank'` (compatible con web/PWA y Capacitor).
    *
    * @param {string} url - URL del recurso a abrir.
    */
-  abrirEnlace(url: string) {
-    if (url) {
-      window.open(url, '_system');
-    }
+  abrirRecurso(url: string) {
+    if (!url || url.trim() === '') return;
+
+    const urlNormalizada =
+      url.startsWith('http://') || url.startsWith('https://')
+        ? url
+        : `https://${url}`;
+
+    window.open(urlNormalizada, '_blank');
   }
 
+  /**
+   * @deprecated Usa `abrirRecurso()`. Mantenido por compatibilidad con llamadas legacy.
+   */
+  abrirEnlace(url: string) {
+    this.abrirRecurso(url);
+  }
+
+  // --- LÓGICA DE TESTS (Mantenida) ---
   // --- Módulo de Tests ---
 
   /** Muestra el menú de selección de tests. */

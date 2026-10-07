@@ -386,10 +386,18 @@ ion-segment {
   box-shadow: 0 4px 12px rgba(102, 170, 159, 0.1);
   border: 1px solid #e0f2f1;
   transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 8px 20px rgba(102, 170, 159, 0.2);
+    transform: translateY(-2px);
+    border-color: #b8eddc;
+  }
 
   &:active {
     transform: scale(0.98);
     background: #f0fdfa !important;
+    box-shadow: 0 2px 8px rgba(102, 170, 159, 0.12);
   }
 
   .recurso-icon-bg {
@@ -403,10 +411,11 @@ ion-segment {
     margin-right: 15px;
     flex-shrink: 0;
     
-    /* Colores por categoría (Asegúrate de que el backend los envíe así) */
-    &.video { background: #ffebee; color: #ef5350; }
+    /* Colores por categoría */
+    &.video   { background: #ffebee; color: #ef5350; }
     &.lectura { background: #e3f2fd; color: #42a5f5; }
-    &.tip { background: #fff8e1; color: #ffca28; }
+    &.tip     { background: #fff8e1; color: #ffca28; }
+    &.juego   { background: #e8f5e9; color: #43a047; }
   }
 
   .recurso-info-texto {
@@ -429,6 +438,7 @@ ion-segment {
     color: #a3d6ca; 
     font-size: 1.2rem; 
     margin-left: 10px;
+    flex-shrink: 0;
   }
 }
 
